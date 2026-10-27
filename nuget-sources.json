@@ -176,17 +176,17 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlite/10.0.13/microsoft.data.sqlite.10.0.13.nupkg",
-        "sha512": "d62233479788af0df208f25fb4f806e00e431288eadb120b16bd4ffa83cdd5e34667a1e3de15a304aac3c8187255f95ea8cefe0fb2f21bb980c0a17858198464",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlite/10.0.14/microsoft.data.sqlite.10.0.14.nupkg",
+        "sha512": "2b7eee7505367688d866e0944fd17c4e5653031cc4d173a4a947e020cdbed8b8fbc899dfa0d8692e6c40a7a7922f6f3547a9dc738ba1200bd3c52a6fd6a8e054",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.data.sqlite.10.0.13.nupkg"
+        "dest-filename": "microsoft.data.sqlite.10.0.14.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlite.core/10.0.13/microsoft.data.sqlite.core.10.0.13.nupkg",
-        "sha512": "6704ed8c5ac2a6aa45e150cda420ca875222f189434dc835a6fb3583370e78007d025a81c0daf2bea8489cef0e8513f10d320a47f86f1379129af57aa0b42a8c",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlite.core/10.0.14/microsoft.data.sqlite.core.10.0.14.nupkg",
+        "sha512": "fc38cf6d151d909bcd2964797fe3a68f13778d3dd606535cfd3970257564834081a4a72859946b259486b1d98c811d20de735043d7b5090740ad7ea3ae1c627c",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.data.sqlite.core.10.0.13.nupkg"
+        "dest-filename": "microsoft.data.sqlite.core.10.0.14.nupkg"
     },
     {
         "type": "file",
