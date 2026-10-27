@@ -33,8 +33,8 @@ modules:
       - --enable-openmp
     sources:
       - type: archive
-        url: https://www.libraw.org/data/LibRaw-0.22.2.tar.gz
-        sha256: de86b035655accff8d4010f1a221fdf50d353cb7b1422ba26f14a0db92612cfa
+        url: https://www.libraw.org/data/LibRaw-0.22.3.tar.gz
+        sha256: 789f3c33466210a1a0907f747a97c715d21bbf4af712f257fcbbd90111b227e4
     cleanup:
       - /include
       - /lib/pkgconfig
@@ -175,6 +175,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/Bitpainter75/FerrumPix.git
-        tag: '0.9.71-1'
-        commit: 6f28034c74db095cc392b395c58456564d5f079a
+        tag: '0.9.71-4'
+        commit: ff15c5600e7daffa9164a04e08a49d322f794917
       - nuget-sources.json
