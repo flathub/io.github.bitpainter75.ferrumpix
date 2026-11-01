@@ -175,6 +175,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/Bitpainter75/FerrumPix.git
-        tag: '0.9.74-1'
-        commit: 701f9b6b55ba3e9e12c6f253755bb7e8f7913382
+        tag: '0.9.75-1'
+        commit: 642baee201b6cdaa0ab00e794732b93edf5ea241
       - nuget-sources.json
