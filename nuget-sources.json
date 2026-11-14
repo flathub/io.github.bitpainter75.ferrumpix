@@ -36,6 +36,13 @@
     },
     {
         "type": "file",
+        "url": "https://api.nuget.org/v3-flatcontainer/avalonia.fonts.inter/12.1.6/avalonia.fonts.inter.12.1.6.nupkg",
+        "sha512": "fcce667acd6ff1972d0805db9af6255f1006f7051e45e819f279199ab9919ca0423d55d46c172f73cbd1934655a665d03a224d33b7e82cb4d781ebbd4712a137",
+        "dest": "nuget-sources",
+        "dest-filename": "avalonia.fonts.inter.12.1.6.nupkg"
+    },
+    {
+        "type": "file",
         "url": "https://api.nuget.org/v3-flatcontainer/avalonia.freedesktop/12.1.6/avalonia.freedesktop.12.1.6.nupkg",
         "sha512": "174be08110225a2b513a5adcf53e2f6732b04a0f9ab31e85dab3578ef756673eb58e4208cb5811e53e54f13684d0325d66e08b32ed2aafd6968d23ba477082b6",
         "dest": "nuget-sources",
@@ -54,6 +61,13 @@
         "sha512": "7be07fe9bcb89631a0cc8a7656874f687e4eb4e78887dd5a23da4d1bd48b8b34618c75070fa613e8b8c0733e35de7799a6d2c87b848cebe5e95a1f1b165e2bd3",
         "dest": "nuget-sources",
         "dest-filename": "avalonia.harfbuzz.12.1.6.nupkg"
+    },
+    {
+        "type": "file",
+        "url": "https://api.nuget.org/v3-flatcontainer/avalonia.headless/12.1.6/avalonia.headless.12.1.6.nupkg",
+        "sha512": "98e27724a92a6b114ccb4b07487e5a8405252fbe89bb471becc0da82fc31d10245e09002304b4abee0732f4168df0f2c6490a4199e8730adb5b424f8e7b43802",
+        "dest": "nuget-sources",
+        "dest-filename": "avalonia.headless.12.1.6.nupkg"
     },
     {
         "type": "file",
