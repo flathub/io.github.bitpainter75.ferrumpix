@@ -204,24 +204,24 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime/1.32.0/microsoft.ml.onnxruntime.1.32.0.nupkg",
-        "sha512": "7e3d8ff6ce68dace4cbf0c1d0e2085e1faf05d425e77580b875c1bd22802527a276ebbdfa07326005b5a8fd6ad8186c17e5710b44dc543acc6bffb3be45404b1",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime/1.31.1/microsoft.ml.onnxruntime.1.31.1.nupkg",
+        "sha512": "42f13cf89ca111c71f38bececf59be7125d919877840aeff06db1da026a7d1e685daaaa039254357f1fb84de43e492467ac279bc83420cb0d57472e73b4c6327",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.ml.onnxruntime.1.32.0.nupkg"
+        "dest-filename": "microsoft.ml.onnxruntime.1.31.1.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime.ep.webgpu/0.6.0/microsoft.ml.onnxruntime.ep.webgpu.0.6.0.nupkg",
-        "sha512": "0a626af5bb543dd9cdf7ef0037c975078b07f321ec1c4a385d6395c6d6413cb896c408a539dc4eeee659db0bb2107e7f1141c0bc4eeeb0dd5ef4973d78186a16",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime.ep.webgpu/0.5.0/microsoft.ml.onnxruntime.ep.webgpu.0.5.0.nupkg",
+        "sha512": "df579a8f2fd0a96fc9ef15a22f63d1c401e3a16b86520a54447c495c9a1c6be3fe7464d836dd5cf316d8b66705b2a39c8402718ca023eced9b71c9e60fa0ea3a",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.ml.onnxruntime.ep.webgpu.0.6.0.nupkg"
+        "dest-filename": "microsoft.ml.onnxruntime.ep.webgpu.0.5.0.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime.managed/1.32.0/microsoft.ml.onnxruntime.managed.1.32.0.nupkg",
-        "sha512": "19da0e77d4ce38dbd5e5b89377728b7f93cb247ca3077821d79aeb0e9c611908d3faa265f187790b5b4dda5aab616ddff993656d96c631ab8f7d93e277e98d29",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime.managed/1.31.1/microsoft.ml.onnxruntime.managed.1.31.1.nupkg",
+        "sha512": "b66dfe208f3c70d3682d6ca1ef51853c278a1fd048adbe62e662d7e2f5473283c8142fe9f39f879781bc8b9a9d42d07ddeb3f6d59b73985813cca85120c84567",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.ml.onnxruntime.managed.1.32.0.nupkg"
+        "dest-filename": "microsoft.ml.onnxruntime.managed.1.31.1.nupkg"
     },
     {
         "type": "file",
