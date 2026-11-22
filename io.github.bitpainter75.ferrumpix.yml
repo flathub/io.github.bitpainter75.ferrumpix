@@ -24,6 +24,8 @@ finish-args:
 modules:
   - name: libraw
     buildsystem: autotools
+    build-options:
+      cppflags: -DUSE_X3FTOOLS -DLIBRAW_X3F_ALLOC_LIMIT_MB=512ULL
     config-opts:
       - --disable-examples
       - --disable-static
@@ -33,13 +35,27 @@ modules:
       - --enable-openmp
     sources:
       - type: archive
-        url: https://www.libraw.org/data/LibRaw-0.22.3.tar.gz
-        sha256: 789f3c33466210a1a0907f747a97c715d21bbf4af712f257fcbbd90111b227e4
+        url: https://github.com/LibRaw/LibRaw/archive/40fb564486681a04eba0318058b0519f4f69eba8.tar.gz
+        sha256: 929b84fc8b0fca23dff0f9142c9a5be1a754da07d9017be4b17e74dc73b34a46
+      - type: patch
+        path: libraw/fbdd-parallel.patch
+      - type: patch
+        path: libraw/arw6-guard.patch
+      - type: file
+        path: libraw/fbdd-parallel.patch
+      - type: file
+        path: libraw/arw6-guard.patch
+      - type: shell
+        commands:
+          - autoreconf -fi
+    post-install:
+      - install -Dm644 fbdd-parallel.patch /app/share/licenses/io.github.bitpainter75.ferrumpix/libraw/fbdd-parallel.patch
+      - install -Dm644 arw6-guard.patch /app/share/licenses/io.github.bitpainter75.ferrumpix/libraw/arw6-guard.patch
     cleanup:
       - /include
       - /lib/pkgconfig
       - /lib/*.la
-      - /share
+      - /share/doc
 
   - name: libXpresent
     buildsystem: autotools
@@ -175,6 +191,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/Bitpainter75/FerrumPix.git
-        tag: '0.9.89-2'
-        commit: dde9c7ff9307b5c967797638895afd3f15fe919f
+        tag: '0.9.90-1'
+        commit: 8b6d4ff9cc48136a06b4e8763c781cbe4103a53f
       - nuget-sources.json

@@ -1,0 +1,201 @@
+FBDD on several cores, with output identical to the serial code.
+
+fbdd_correction and the first three passes of dcb_color_full only read values
+they do not write; they get a parallel loop over rows. fbdd_green and the last
+pass of dcb_color_full work in place and read already updated neighbours above
+(and, for dcb_color_full, to the left); they run as a wavefront in which row i
+computes a block of columns only after row i-1 has finished the next block.
+The arithmetic is unchanged. Without LIBRAW_USE_OPENMP the code runs serially
+in the original order.
+
+Against LibRaw 40fb564486681a04eba0318058b0519f4f69eba8, apply with patch -p1.
+The source file uses CRLF line endings; so do the changed lines.
+
+--- a/src/demosaic/dcb_demosaic.cpp
++++ b/src/demosaic/dcb_demosaic.cpp
+@@ -41,6 +41,68 @@
+ 
+ #include "../../internal/dcraw_defs.h"
+ 
++#ifdef LIBRAW_USE_OPENMP
++#include <atomic>
++#include <memory>
++#ifndef _WIN32
++#include <sched.h>
++#endif
++
++// FBDD runs in place in two of its passes: fbdd_green and the last pass of
++// dcb_color_full read the already updated values of the row above (and, for
++// dcb_color_full, of the pixel to the left) and the not yet updated values of
++// the row below. A plain parallel loop over rows would change the result.
++// fbdd_wavefront keeps the serial order of every read: rows are dealt to the
++// threads in turn, and row i computes a block of columns only after row i-1
++// has finished the block after it. Row i-1 then has written every value row i
++// reads above it, and has read every old value of row i before row i
++// overwrites it. The arithmetic is unchanged, so the output is identical to
++// the serial run for any number of threads.
++#define FBDD_WAVEFRONT_BLOCK 256
++
++static inline void fbdd_wavefront_yield()
++{
++#ifdef _WIN32
++  SwitchToThread();
++#else
++  sched_yield();
++#endif
++}
++
++template <typename RowSpan>
++static void fbdd_wavefront(int r0, int r1, int c_lo, int c_hi, RowSpan span)
++{
++  const int rows = r1 - r0;
++  if (rows <= 0 || c_hi <= c_lo)
++    return;
++  std::unique_ptr<std::atomic<int>[]> progress(new std::atomic<int>[rows]);
++  for (int i = 0; i < rows; i++)
++    progress[i].store(c_lo, std::memory_order_relaxed);
++#pragma omp parallel
++  {
++    const int t = omp_get_thread_num(), n = omp_get_num_threads();
++    for (int i = t; i < rows; i += n)
++      for (int c0 = c_lo; c0 < c_hi; c0 += FBDD_WAVEFRONT_BLOCK)
++      {
++        const int c1 = MIN(c0 + FBDD_WAVEFRONT_BLOCK, c_hi);
++        if (i > 0)
++        {
++          const int need = MIN(c1 + FBDD_WAVEFRONT_BLOCK, c_hi);
++          int spins = 0;
++          while (progress[i - 1].load(std::memory_order_acquire) < need)
++            if (++spins > 2000)
++            {
++              fbdd_wavefront_yield();
++              spins = 0;
++            }
++        }
++        span(r0 + i, c0, c1);
++        progress[i].store(c1, std::memory_order_release);
++      }
++  }
++}
++#endif
++
+ // interpolates green vertically and saves it to image3
+ void LibRaw::dcb_ver(float (*image3)[3])
+ {
+@@ -322,17 +384,25 @@
+ // Rodríguez
+ void LibRaw::dcb_color_full()
+ {
+-  int row, col, c, d, u = width, w = 3 * u, indx, g1, g2;
++  int row, col, c, d, u = width, w = 3 * u, indx;
+   float f[4], g[4], (*chroma)[2];
+ 
+   chroma = (float(*)[2])calloc(width * height, sizeof *chroma);
+ 
++  // The first three passes only read values they do not write: rows are
++  // independent.
++#ifdef LIBRAW_USE_OPENMP
++#pragma omp parallel for schedule(static) private(col, c, d, indx)
++#endif
+   for (row = 1; row < height - 1; row++)
+     for (col = 1 + (FC(row, 1) & 1), indx = row * width + col, c = FC(row, col),
+         d = c / 2;
+          col < u - 1; col += 2, indx += 2)
+       chroma[indx][d] = float(image[indx][c] - image[indx][1]);
+ 
++#ifdef LIBRAW_USE_OPENMP
++#pragma omp parallel for schedule(static) private(col, c, d, indx, f, g)
++#endif
+   for (row = 3; row < height - 3; row++)
+     for (col = 3 + (FC(row, 1) & 1), indx = row * width + col,
+         c = 1 - FC(row, col) / 2, d = 1 - c;
+@@ -370,6 +440,9 @@
+           (f[0] * g[0] + f[1] * g[1] + f[2] * g[2] + f[3] * g[3]) /
+           (f[0] + f[1] + f[2] + f[3]);
+     }
++#ifdef LIBRAW_USE_OPENMP
++#pragma omp parallel for schedule(static) private(col, c, d, indx, f, g)
++#endif
+   for (row = 3; row < height - 3; row++)
+     for (col = 3 + (FC(row, 2) & 1), indx = row * width + col,
+         c = FC(row, col + 1) / 2;
+@@ -403,8 +476,11 @@
+             (f[0] + f[1] + f[2] + f[3]);
+       }
+ 
+-  for (row = 6; row < height - 6; row++)
+-    for (col = 6, indx = row * width + col; col < width - 6; col++, indx++)
++  // The last pass works in place and clamps against the eight neighbours, of
++  // which the left and upper ones are already updated: see fbdd_wavefront.
++  auto clamp_span = [&](int crow, int c0, int c1) {
++    int ccol, indx, g1, g2;
++    for (ccol = c0, indx = crow * width + ccol; ccol < c1; ccol++, indx++)
+     {
+       image[indx][0] = CLIP(chroma[indx][0] + image[indx][1]);
+       image[indx][2] = CLIP(chroma[indx][1] + image[indx][1]);
+@@ -449,6 +525,13 @@
+ 
+       image[indx][2] = ULIM(image[indx][2], g2, g1);
+     }
++  };
++#ifdef LIBRAW_USE_OPENMP
++  fbdd_wavefront(6, height - 6, 6, width - 6, clamp_span);
++#else
++  for (row = 6; row < height - 6; row++)
++    clamp_span(row, 6, width - 6);
++#endif
+ 
+   free(chroma);
+ }
+@@ -674,6 +757,11 @@
+ {
+   int row, col, c, u = width, indx;
+ 
++  // Each pixel writes only its own colour and reads another colour at its
++  // neighbours: rows are independent.
++#ifdef LIBRAW_USE_OPENMP
++#pragma omp parallel for schedule(static) private(col, c, indx)
++#endif
+   for (row = 2; row < height - 2; row++)
+   {
+     for (col = 2, indx = row * width + col; col < width - 2; col++, indx++)
+@@ -745,13 +833,18 @@
+ // Luis Sanz Rodríguez
+ void LibRaw::fbdd_green()
+ {
+-  int row, col, c, u = width, v = 2 * u, w = 3 * u, x = 4 * u, y = 5 * u, indx,
+-                   min, max;
+-  float f[4], g[4];
+-
+-  for (row = 5; row < height - 5; row++)
+-    for (col = 5 + (FC(row, 1) & 1), indx = row * width + col, c = FC(row, col);
+-         col < u - 5; col += 2, indx += 2)
++  int u = width, v = 2 * u, w = 3 * u, x = 4 * u, y = 5 * u;
++
++  // Works in place; the clamp below reads the already updated diagonal
++  // neighbours of the row above: see fbdd_wavefront.
++  auto green_span = [&](int grow, int c0, int c1) {
++    int col, c, indx, min, max;
++    float f[4], g[4];
++    col = 5 + (FC(grow, 1) & 1);
++    if (col < c0)
++      col += (c0 - col + 1) & ~1;
++    for (indx = grow * width + col, c = FC(grow, col);
++         col < u - 5 && col < c1; col += 2, indx += 2)
+     {
+ 
+       f[0] = 1.0f / (1.0f + abs(image[indx - u][1] - image[indx - w][1]) +
+@@ -808,6 +901,13 @@
+ 
+       image[indx][1] = ULIM(image[indx][1], max, min);
+     }
++  };
++#ifdef LIBRAW_USE_OPENMP
++  fbdd_wavefront(5, height - 5, 0, width, green_span);
++#else
++  for (int row = 5; row < height - 5; row++)
++    green_span(row, 0, width);
++#endif
+ }
+ 
+ // FBDD (Fake Before Demosaicing Denoising)
